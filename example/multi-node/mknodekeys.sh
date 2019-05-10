@@ -9,6 +9,8 @@
 
 if [ "$(uname -m)" = "armv7l" ]; then
   PROJECT=arm32v7
+elif [ "$(uname -m)" = "aarch64" ]; then
+  PROJECT=arm64v8
 else
   PROJECT=hyperledger
 fi

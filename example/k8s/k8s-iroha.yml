@@ -58,7 +58,7 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
-        workingDir: /opt/iroha
+        workingDir: /opt/iroha/config
         command: ['bash', '/opt/iroha/config/entrypoint.sh']
         volumeMounts:
         - name: block-store

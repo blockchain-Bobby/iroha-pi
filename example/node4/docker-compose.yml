@@ -9,7 +9,7 @@ version: '3'
 services:
 
   node0:
-    image: hyperledger/${IROHA_IMG}
+    image: ${IROHA_ARC}/${IROHA_IMG}
     container_name: iroha-node0
     restart: always
     ports:
@@ -22,12 +22,12 @@ services:
       - ${PWD}:/opt/iroha/config
       - ${PWD}/block_store0:/tmp/block_store
       - ccache-data:/tmp/ccache
-    working_dir: /opt/iroha
+    working_dir: /opt/iroha/config
     depends_on:
       - postgres0
 
   node1:
-    image: hyperledger/${IROHA_IMG}
+    image: ${IROHA_ARC}/${IROHA_IMG}
     container_name: iroha-node1
     restart: always
     environment:
@@ -38,12 +38,12 @@ services:
       - ${PWD}:/opt/iroha/config
       - ${PWD}/block_store1:/tmp/block_store
       - ccache-data:/tmp/ccache
-    working_dir: /opt/iroha
+    working_dir: /opt/iroha/config
     depends_on:
       - postgres1
 
   node2:
-    image: hyperledger/${IROHA_IMG}
+    image: ${IROHA_ARC}/${IROHA_IMG}
     container_name: iroha-node2
     restart: always
     environment:
@@ -54,12 +54,12 @@ services:
       - ${PWD}:/opt/iroha/config
       - ${PWD}/block_store2:/tmp/block_store
       - ccache-data:/tmp/ccache
-    working_dir: /opt/iroha
+    working_dir: /opt/iroha/config
     depends_on:
       - postgres2
 
   node3:
-    image: hyperledger/${IROHA_IMG}
+    image: ${IROHA_ARC}/${IROHA_IMG}
     container_name: iroha-node3
     restart: always
     environment:
@@ -70,7 +70,7 @@ services:
       - ${PWD}:/opt/iroha/config
       - ${PWD}/block_store3:/tmp/block_store
       - ccache-data:/tmp/ccache
-    working_dir: /opt/iroha
+    working_dir: /opt/iroha/config
     depends_on:
       - postgres3
 

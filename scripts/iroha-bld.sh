@@ -24,6 +24,12 @@ TESTING=$2
 ##     libs/crypto/keys_manager_impl.cpp
 ## fi
 
+# Temporary fix for soci building on Linux/armv7l
+if [ "$(uname -m)" = "armv7l" ]; then
+  mkdir /usr/local/lib32
+  mv /usr/local/lib/libsoci* /usr/local/lib32
+fi
+
 cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Release -DTESTING=${TESTING}
 cmake --build build -- -j${NUMCORE}
 

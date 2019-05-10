@@ -8,20 +8,25 @@ version: '3'
 
 services:
   node:
-    image: arm64v8/${IROHA_IMG}
+    image: ${IROHA_ARC}/${IROHA_IMG}
+    restart: always
     ports:
       - "50051:50051"
+      - "10001:10001"
     environment:
+      - IROHA_NODEKEY=node0
       - CCACHE_DIR=/tmp/ccache
     volumes:
-      - ${PWD}/example:/opt/iroha/config
+      - ${PWD}:/opt/iroha/config
+      - ${PWD}/block_store:/tmp/block_store
       - ccache-data:/tmp/ccache
-    working_dir: /opt/iroha
+    working_dir: /opt/iroha/config
     depends_on:
       - postgres
 
   postgres:
-    image: arm64v8/postgres:9.5
+    image: postgres:9.5
+    restart: always
     environment:
       - POSTGRES_USER=iroha
       - POSTGRES_PASSWORD=HelloW0rld

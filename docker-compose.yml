@@ -8,7 +8,7 @@ version: '3'
 
 services:
   node:
-    image: hyperledger/${IROHA_IMG}
+    image: ${IROHA_ARC}/${IROHA_IMG}
     ports:
       - "50051:50051"
     environment:
@@ -16,7 +16,7 @@ services:
     volumes:
       - ${PWD}/example:/opt/iroha/config
       - ccache-data:/tmp/ccache
-    working_dir: /opt/iroha
+    working_dir: /opt/iroha/config
     depends_on:
       - postgres
 

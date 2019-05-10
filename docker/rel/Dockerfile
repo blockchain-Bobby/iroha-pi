@@ -18,7 +18,7 @@ LABEL BUILD_HOST="${BUILD_HOST}"
 
 ENV IROHA_HOME=/opt/iroha
 ENV LD_LIBRARY_PATH=${IROHA_HOME}/lib
-ENV PATH PATH=${PATH}:/opt/iroha/bin
+ENV PATH PATH=${PATH}:${IROHA_HOME}/bin
 
 COPY iroha ${IROHA_HOME}
 
@@ -33,8 +33,8 @@ RUN groupadd -g 998 vboxsf \
 
 USER iroha
 
-WORKDIR ${IROHA_HOME}
+WORKDIR /opt/iroha/config
 
-COPY entrypoint.sh wait-for-it.sh /opt/iroha/bin/
+COPY entrypoint.sh wait-for-it.sh ${IROHA_HOME}/bin/
 
 ENTRYPOINT ["/opt/iroha/bin/entrypoint.sh"]

@@ -25,9 +25,8 @@ PG_PORT=$(cat config/${IROHA_CONF} | grep pg_opt | sed -e 's/^.*port=//' -e 's/ 
 
 /opt/iroha/bin/wait-for-it.sh -h ${PG_HOST} -p ${PG_PORT} -t 60 -- true
 
-# When Raspberry Pi (Linux/armv7l and Linux/aarch64),
-# Wait until PostgreSQL is stabilized
-if [ "$(uname -m)" != "x86_64" ]; then
+# Raspberry Pi, Wait until PostgreSQL is stabilized
+if [ "$(uname -m)" = "armv7l" ]; then
   sleep 30
 fi
 
