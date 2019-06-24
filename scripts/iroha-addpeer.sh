@@ -16,6 +16,11 @@ if [ $# -eq 0 ]; then
   usage
 fi
 
+if [ ! -d example/multi-node ]; then
+  echo "example/multi-node directory not found!"
+  exit 1
+fi
+
 cd example/multi-node
 
 case "$1" in
@@ -46,17 +51,15 @@ echo "Cleanup current block_store data:"
 echo "$ rm -f block_store/0*"
 rm -f block_store/0*
 
+cat docker-compose.yml.in |
+  sed -e "s/IROHA_NODEKEY=.*/IROHA_NODEKEY=${1}/" >docker-compose.yml
+
 echo "Current node:"
 echo "    $(grep IROHA_NODEKEY docker-compose.yml | sed 's/.*IROHA_NODEKEY=//')"
 
 PEERS=$(grep address genesis.block | sed 's/.*address":"/    /' | sed 's/",//')
 echo "Peers:"
 echo "${PEERS}"
-
-exit 0
-
-cat docker-compose.yml.in |
-  sed -e "s/IROHA_NODEKEY=.*/IROHA_NODEKEY=${1}/" >docker-compose.yml
 
 echo "$ docker-compose -f docker-compose.yml up -d"
 docker-compose -f docker-compose.yml up -d

@@ -25,16 +25,17 @@ COPY iroha ${IROHA_HOME}
 RUN apt update \
  && apt upgrade -y \
  && useradd -ms /bin/bash iroha \
- && mkdir ${IROHA_HOME}/key \
- && chown -R iroha:iroha ${IROHA_HOME}
+ && mkdir ${IROHA_HOME}/key
 
-RUN groupadd -g 998 vboxsf \
+COPY entrypoint.sh wait-for-it.sh ${IROHA_HOME}/bin/
+
+RUN chown -R iroha:iroha ${IROHA_HOME} \
+ && chmod 755 ${IROHA_HOME}/bin/* \
+ && groupadd -g 998 vboxsf \
  && usermod -aG vboxsf iroha
 
 USER iroha
 
-WORKDIR /opt/iroha/config
-
-COPY entrypoint.sh wait-for-it.sh ${IROHA_HOME}/bin/
+WORKDIR ${IROHA_HOME}/config
 
 ENTRYPOINT ["/opt/iroha/bin/entrypoint.sh"]
