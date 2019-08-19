@@ -42,6 +42,7 @@
 BUILD_HOME := $(PWD)/../iroha
 IROHA_HOME := /opt/iroha
 IROHA_IMG := $(shell grep IROHA_IMG .env | cut -d"=" -f2)
+IROHA_PRJ := $(shell grep IROHA_PRJ .env | cut -d"=" -f2)
 COMPOSE_PROJECT_NAME := $(shell grep COMPOSE_PROJECT_NAME .env | cut -d'=' -f2)
 
 BUILD_DATE := $(shell echo "`env LC_ALL=C date`")
@@ -67,22 +68,18 @@ URELEASE := $(shell uname -r)
 
 ifeq ($(UKERNEL),Linux)
   ifeq ($(UMACHINE),x86_64)
-    PROJECT := hyperledger
     DOCKER := Dockerfile
     COMPOSE_TEST := docker-compose-test.yml
   endif
   ifeq ($(UMACHINE),armv7l)
-    PROJECT := arm32v7
     DOCKER := Dockerfile
   endif
   ifeq ($(UMACHINE),aarch64)
-    PROJECT := arm64v8
     DOCKER := Dockerfile
   endif
 endif
 
 ifeq ($(UKERNEL),Darwin)
-  PROJECT := hyperledger
   DOCKER := Dockerfile
   COMPOSE_TEST := docker-compose-test.yml
 endif
@@ -140,19 +137,19 @@ testup: iroha-testup
 endif
 
 iroha-dev:
-	cd docker/dev && docker build --rm --build-arg NUMCORE=$(NUMCORE) -t $(PROJECT)/$(IROHA_IMG)-dev .
+	cd docker/dev && docker build --rm --build-arg NUMCORE=$(NUMCORE) -t $(IROHA_PRJ)/$(IROHA_IMG)-dev .
 
 iroha-bld:
 	sudo rsync -av scripts $(BUILD_HOME)
-	docker run -t --rm --name iroha-bld -v $(BUILD_HOME):/opt/iroha $(PROJECT)/$(IROHA_IMG)-dev /opt/iroha/scripts/iroha-bld.sh $(NUMCORE) $(TESTING)
+	docker run -t --rm --name iroha-bld -v $(BUILD_HOME):/opt/iroha $(IROHA_PRJ)/$(IROHA_IMG)-dev /opt/iroha/scripts/iroha-bld.sh $(NUMCORE) $(TESTING)
 
 iroha-rel:
-	docker run -t --rm --name iroha-rel -v $(BUILD_HOME):/opt/iroha -w /opt/iroha $(PROJECT)/$(IROHA_IMG)-dev /opt/iroha/scripts/iroha-rel.sh
+	docker run -t --rm --name iroha-rel -v $(BUILD_HOME):/opt/iroha -w /opt/iroha $(IROHA_PRJ)/$(IROHA_IMG)-dev /opt/iroha/scripts/iroha-rel.sh
 	sudo rsync -av ${BUILD_HOME}/docker/iroha docker/rel
 	sudo rm -fr ${BUILD_HOME}/docker/iroha
 
 iroha:
-	cd docker/rel; docker build --rm --build-arg GITLOG="$(GITLOG)" --build-arg BUILD_DATE="$(BUILD_DATE)" --build-arg BUILD_NO="$(BUILD_NO)" --build-arg BUILD_HOST="$(BUILD_HOST)" -t $(PROJECT)/$(IROHA_IMG) .
+	cd docker/rel; docker build --rm --build-arg GITLOG="$(GITLOG)" --build-arg BUILD_DATE="$(BUILD_DATE)" --build-arg BUILD_NO="$(BUILD_NO)" --build-arg BUILD_HOST="$(BUILD_HOST)" -t $(IROHA_PRJ)/$(IROHA_IMG) .
 	@scripts/build-no.sh
 
 iroha-up:
@@ -201,4 +198,4 @@ endif
 	-sudo rm -fr $(BUILD_HOME)/cmake-build-debug
 
 version:
-	docker inspect -f {{.Config.Labels}} $(PROJECT)/$(IROHA_IMG)
+	docker inspect -f {{.Config.Labels}} $(IROHA_PRJ)/$(IROHA_IMG)

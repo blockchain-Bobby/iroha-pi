@@ -8,14 +8,17 @@
 #
 
 IROHA_NODE="iroha-node"
-TTY="/dev/"
+TTY="/dev/pts/"
 
-N=$(w -h | wc -l)
-
-w -h | sed '/ console /d' >/tmp/ilogs.$$
 
 if [ "$(uname -s)" = "Darwin" ]; then
+  N=$(w -h | wc -l)
+  w -h | sed '/ console /d' >/tmp/ilogs.$$
+
   TTY="/dev/tty"
+else
+  ps -ef | awk '{print $6}' | grep pts | sort | uniq | sed 's/\// /' >/tmp/ilogs.$$
+  N=$(cat /tmp/ilogs.$$ | wc -l)
 fi
 
 if [ $N -gt 4 ]; then

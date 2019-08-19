@@ -4,6 +4,8 @@
 # All Rights Reserved.
 #
 
+cd ${IROHA_HOME}
+
 cp config/admin_test.priv key/admin@test.priv
 cp config/admin_test.pub  key/admin@test.pub
 cp config/test_test.priv  key/test@test.priv

@@ -9,7 +9,7 @@ version: '3'
 services:
 
   node0:
-    image: ${IROHA_ARC}/${IROHA_IMG}
+    image: ${IROHA_PRJ}/${IROHA_IMG}
     container_name: iroha-node0
     restart: always
     ports:
@@ -27,7 +27,7 @@ services:
       - postgres0
 
   node1:
-    image: ${IROHA_ARC}/${IROHA_IMG}
+    image: ${IROHA_PRJ}/${IROHA_IMG}
     container_name: iroha-node1
     restart: always
     environment:
@@ -43,7 +43,7 @@ services:
       - postgres1
 
   node2:
-    image: ${IROHA_ARC}/${IROHA_IMG}
+    image: ${IROHA_PRJ}/${IROHA_IMG}
     container_name: iroha-node2
     restart: always
     environment:
@@ -59,7 +59,7 @@ services:
       - postgres2
 
   node3:
-    image: ${IROHA_ARC}/${IROHA_IMG}
+    image: ${IROHA_PRJ}/${IROHA_IMG}
     container_name: iroha-node3
     restart: always
     environment:

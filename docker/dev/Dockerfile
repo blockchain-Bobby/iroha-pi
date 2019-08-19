@@ -26,19 +26,20 @@ RUN git clone https://gitlab.kitware.com/cmake/cmake.git /tmp/cmake \
  && ldconfig \
  && rm -fr /tmp/cmake
 
-# install boost 1.65.1
+# install boost 1.70.0
 RUN git clone https://github.com/boostorg/boost /tmp/boost \
- && (cd /tmp/boost; git checkout 436ad1dfcfc7e0246141beddd11c8a4e9c10b146) \
+ && (cd /tmp/boost; git checkout 8f9a1cf1d15d262e09c16a305034d8bc1e39aca2) \
  && (cd /tmp/boost; git submodule update --init --recursive) \
+ && (cd /tmp/boost/libs/variant; curl https://patch-diff.githubusercontent.com/raw/boostorg/variant/pull/68.patch | git apply) \
  && (cd /tmp/boost; /tmp/boost/bootstrap.sh --with-libraries=system,filesystem,thread) \
  && (cd /tmp/boost; /tmp/boost/b2 headers) \
  && (cd /tmp/boost; /tmp/boost/b2 cxxflags="-std=c++14" -j${NUMCORE} install) \
  && ldconfig \
  && rm -fr /tmp/boost
 
-# install protobuf v3.5.1
+# install protobuf v3.8.0
 RUN git clone https://github.com/google/protobuf /tmp/protobuf \
- && (cd /tmp/protobuf; git checkout 106ffc04be1abf3ff3399f54ccf149815b287dd9) \
+ && (cd /tmp/protobuf; git checkout 09745575a923640154bcf307fba8aedff47f240a) \
  && cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
       -Dprotobuf_BUILD_TESTS=OFF \
       -Dprotobuf_BUILD_SHARED_LIBS=ON \
@@ -68,9 +69,9 @@ RUN git clone https://github.com/c-ares/c-ares /tmp/c-ares \
  && ldconfig \
  && rm -rf /tmp/c-ares
 
-# install grpc 1.11.0
+# install grpc 1.21.1
 RUN git clone https://github.com/grpc/grpc /tmp/grpc \
- && (cd /tmp/grpc; git checkout bd44e485f69d70ca4095cea92decd98de3892aa6) \
+ && (cd /tmp/grpc; git checkout 75475f090875e737ad6909a6057c59577f0c79b1) \
  && cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
       -DgRPC_BENCHMARK_PROVIDER="" \
       -DgRPC_ZLIB_PROVIDER=package \
@@ -85,24 +86,38 @@ RUN git clone https://github.com/grpc/grpc /tmp/grpc \
  && ldconfig \
  && rm -rf /tmp/grpc
 
-# install gtest
-RUN git clone https://github.com/google/googletest /tmp/googletest \
- && (cd /tmp/googletest; git checkout ec44c6c1675c25b9827aacd08c02433cccde7780) \
- && cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
-      -H/tmp/googletest \
-      -B/tmp/googletest/build \
- && cmake --build /tmp/googletest/build --target install -- -j${NUMCORE} \
- && ldconfig \
- && rm -rf /tmp/googletest
+## # install gtest 2019-01-04
+## RUN git clone https://github.com/google/googletest /tmp/googletest \
+##  && (cd /tmp/googletest; git checkout b6cd405286ed8635ece71c72f118e659f4ade3fb) \
+##  && cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
+##       -H/tmp/googletest \
+##       -B/tmp/googletest/build \
+##  && cmake --build /tmp/googletest/build --target install -- -j${NUMCORE} \
+##  && ldconfig \
+##  && rm -rf /tmp/googletest
 
-# install spdlog v0.16.3
+# install fmtlib 5.3.0
+RUN git clone git://github.com/fmtlib/fmt.git /tmp/fmt \
+ && cd /tmp/fmt; git checkout 9e554999ce02cf86fcdfe74fe740c4fe3f5a56d5 \
+ && mkdir build; cd build \
+ && cmake \
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
+      -DBUILD_SHARED_LIBS=TRUE \
+      -DFMT_TEST=OFF .. \
+ && cmake --build /tmp/fmt/build --target install -- -j${NUMCORE} \
+ && ldconfig \
+ && cd /tmp; rm -fr /tmp/fmt
+
+# install spdlog v1.3.1
 RUN git clone https://github.com/gabime/spdlog /tmp/spdlog \
- && (cd /tmp/spdlog; git checkout ccd675a286f457068ee8c823f8207f13c2325b26) \
+ && (cd /tmp/spdlog; git checkout a7148b718ea2fabb8387cb90aee9bf448da63e65) \
  && cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
-      -DSPDLOG_BUILD_TESTING=OFF \
+      -DSPDLOG_BUILD_BENCH=OFF \
+      -DSPDLOG_BUILD_TESTS=OFF \
+      -DSPDLOG_FMT_EXTERNAL=ON \
       -H/tmp/spdlog \
       -B/tmp/spdlog/build \
- && cmake --build /tmp/spdlog/build --target install \
+ && cmake --build /tmp/spdlog/build --target install -- -j${NUMCORE} \
  && rm -rf /tmp/spdlog
 
 # install rxcpp
@@ -111,7 +126,7 @@ RUN git clone https://github.com/Reactive-Extensions/RxCpp /tmp/RxCpp \
  && cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
       -H/tmp/RxCpp \
       -B/tmp/RxCpp/build \
- && cmake --build /tmp/RxCpp/build --target install \
+ && cmake --build /tmp/RxCpp/build --target install -- -j${NUMCORE} \
  && rm -fr /tmp/RxCpp
 
 # install rapidjson
@@ -121,7 +136,7 @@ RUN git clone https://github.com/miloyip/rapidjson /tmp/rapidjson \
       -DRAPIDJSON_BUILD_EXAMPLES=OFF \
       -H/tmp/rapidjson \
       -B/tmp/rapidjson/build \
- && cmake --build /tmp/rapidjson/build --target install \
+ && cmake --build /tmp/rapidjson/build --target install -- -j${NUMCORE} \
  && ldconfig \
  && rm -fr /tmp/rapidjson
 
@@ -140,9 +155,9 @@ RUN git clone https://git.postgresql.org/git/postgresql.git /tmp/postgresql \
  && ldconfig \
  && rm -fr /tmp/postgresql
 
-# install soci 3.2.3
+# install soci
 RUN git clone https://github.com/SOCI/soci /tmp/soci \
- && (cd /tmp/soci; git checkout 111b50af8c3876ea392367640b4bd83b4f903ab8) \
+ && (cd /tmp/soci; git checkout 349ce86b79e63b99ba95200bc4bd1d83791e9094) \
  && cmake \
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
       -DSOCI_CXX_C11=ON \
@@ -156,9 +171,9 @@ RUN git clone https://github.com/SOCI/soci /tmp/soci \
       -DWITH_ORACLE=OFF \
       -DWITH_POSTGRESQL=ON \
       -DWITH_SQLITE3=OFF \
-      -H/tmp/soci/src \
+      -H/tmp/soci \
       -B/tmp/soci/build \
- && cmake --build /tmp/soci/build --target install \
+ && cmake --build /tmp/soci/build --target install -- -j${NUMCORE} \
  && ldconfig \
  && rm -rf /tmp/soci
 

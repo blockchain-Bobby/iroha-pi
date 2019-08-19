@@ -30,8 +30,8 @@ if [ "${UKERNEL}" = "Linux" ]; then
         NUMCORE=2
       fi
     fi
-  # Linux/armv7l (Raspberry Pi3)
-  elif [ "${UMACHINE}" = "armv7l" ]; then
+  # Linux/armv7l (Raspberry Pi3) or Linux/aarch64 (Ubuntu for arm64)
+  elif [ "${UMACHINE}" = "armv7l" -o "${UMACHINE}" = "aarch64" ]; then
     NUMCORE=2
   else
     NUMCORE=1
@@ -39,9 +39,9 @@ if [ "${UKERNEL}" = "Linux" ]; then
 elif [ "${UKERNEL}" = "Darwin" ]; then
   # MacOS (Intel)
   if [ "${UMACHINE}" = "x86_64" ]; then
-##  NUMCORE=$(system_profiler SPHardwareDataType | grep Cores |
-##    sed 's/^.*Cores: //')
-    NUMCORE=$(sysctl -n hw.ncpu)
+    NUMCORE=$(system_profiler SPHardwareDataType | grep Cores |
+      sed 's/^.*Cores: //')
+##  NUMCORE=$(sysctl -n hw.ncpu)
   else
     NUMCORE=1
   fi
